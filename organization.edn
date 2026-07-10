@@ -1,3 +1,12 @@
 ;; Real-world organization location / contact.
 ;; :head-role is institutional title only — no personal names.
-{:contact-page "https://www.wikidata.org/wiki/Q217810", :ooyake-id "gov.usa.doe", :sourced-from "com-etzhayyim-ooyake gov-units (verbatim where present)", :head-role-note "institutional office title only; personal names of current office-holders are intentionally NOT stored", :official-url "https://www.energy.gov/", :head-role "Secretary of Energy", :hq {:line-en "Washington, D.C.", :country "usa", :kind "headquarters", :provenance "https://www.wikidata.org/wiki/Q217810", :last-verified "2026-06-03", :sourcing "authoritative"}, :wikidata "Q217810", :name-en "United States Department of Energy"}
+{:ooyake-id "gov.usa.doe"
+  :official-url "https://www.energy.gov/"
+  :name-en "United States Department of Energy"
+  :wikidata "Q217810"
+  :head-role "Secretary of Energy"
+  :head-role-note "institutional office title only; personal names of current office-holders are intentionally NOT stored"
+  :contact-page "https://www.wikidata.org/wiki/Q217810"
+  :sourced-from "com-etzhayyim-ooyake gov-units (verbatim where present)"
+  :hq {:line-en "Washington, D.C." :country "usa" :kind "headquarters" :provenance "https://www.wikidata.org/wiki/Q217810" :last-verified "2026-06-03" :sourcing "authoritative"}
+}

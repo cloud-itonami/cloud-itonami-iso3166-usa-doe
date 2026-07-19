@@ -6,7 +6,7 @@
   :wikidata "Q217810"
   :head-role "Secretary of Energy"
   :head-role-note "institutional office title only; personal names of current office-holders are intentionally NOT stored"
-  :contact-page "https://www.wikidata.org/wiki/Q217810"
-  :sourced-from "com-etzhayyim-ooyake gov-units (verbatim where present)"
-  :hq {:line-en "Washington, D.C." :country "usa" :kind "headquarters" :provenance "https://www.wikidata.org/wiki/Q217810" :last-verified "2026-06-03" :sourcing "authoritative"}
+  :contact-page "https://www.energy.gov/contact-us"
+  :sourced-from "official public contact page"
+  :hq {:line-en "1000 Independence Avenue SW, Washington, DC 20585" :line-local "1000 Independence Avenue SW, Washington, DC 20585" :postal-code "20585" :phone "1-202-586-5000" :kind "headquarters" :provenance "https://www.energy.gov/contact-us" :last-verified "2026-07-19" :sourcing "official-site-public" :country "usa"}
 }

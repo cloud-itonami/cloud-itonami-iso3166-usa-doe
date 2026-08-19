@@ -1,0 +1,95 @@
+#!/usr/bin/env nbb
+;; Live citation gate for src/statute/facts.cljc.
+;;
+;; Re-fetches the official eCFR versioner API and asserts that every
+;; :statute/verified-label in the catalog is still the byte-exact
+;; label_description the API returns for that node. Any drift, any missing
+;; node, any unreachable API => exit 1.
+;;
+;;   nbb tools/verify_citations.cljs
+;;
+;; Why this exists, and why it does NOT curl :statute/url --
+;; www.ecfr.gov answers automated clients with HTTP 200 and a
+;; "Federal Register :: Request Access" interstitial instead of the
+;; regulation. A status-code check against those URLs reports success while
+;; proving nothing, which is the exact failure this gate is meant to close.
+;; We verify through the documented machine API instead.
+;;
+;; Exit codes are three-valued on purpose: 0 verified, 1 drifted/mismatched,
+;; 2 could-not-answer (network/API down). 2 must never be read as a pass.
+(ns verify-citations
+  (:require [clojure.string :as str]))
+
+(def catalog-file "src/statute/facts.cljc")
+
+(defn- die [code & msg]
+  (println (str/join " " msg))
+  (js/process.exit code))
+
+;; ── read the catalog without needing a Clojure runtime ────────────────────
+;; We parse the entries out of the .cljc source so this gate has no build
+;; step. Each entry is a map literal; we pull the four fields we check.
+(defn- entries []
+  (let [src (.readFileSync (js/require "fs") catalog-file "utf8")
+        blocks (rest (str/split src #"\{:statute/id "))]
+    (mapv (fn [b]
+            (let [f (fn [re] (second (re-find re b)))]
+              {:id (f #"^\"([^\"]+)\"")
+               :title (f #":statute/cfr-title (\d+)")
+               :node-type (f #":statute/cfr-node \[:(\w+)")
+               :node-id (f #":statute/cfr-node \[:\w+ \"([^\"]+)\"\]")
+               :label (f #":statute/verified-label \"((?:[^\"\\]|\\.)*)\"")
+               :api (f #":statute/verified-via \"([^\"]+)\"")
+               :url (f #":statute/url \"([^\"]+)\"")}))
+          blocks)))
+
+(defn- fetch-json [url]
+  (-> (js/fetch url)
+      (.then (fn [r]
+               (when-not (.-ok r)
+                 (die 2 "CANNOT-ANSWER: eCFR API returned HTTP" (.-status r) "for" url))
+               (.json r)))
+      (.catch (fn [e] (die 2 "CANNOT-ANSWER: eCFR API unreachable:" (str e))))))
+
+(defn- find-node
+  "Depth-first search for a node of `type` with `identifier`."
+  [node type id]
+  (if (and (= type (.-type node)) (= id (.-identifier node)))
+    node
+    (some #(find-node % type id) (or (.-children node) []))))
+
+(defn -main []
+  (let [es (entries)]
+    (when (empty? es)
+      (die 2 "CANNOT-ANSWER: parsed 0 entries from" catalog-file
+           "— the gate could not read what it is supposed to check"))
+    (println "SCANNED\t" (count es) "entries from" catalog-file)
+    (-> (js/Promise.all
+         (clj->js (map (fn [api] (fetch-json api))
+                       (distinct (map :api es)))))
+        (.then
+         (fn [docs]
+           (let [by-api (zipmap (distinct (map :api es)) docs)
+                 results
+                 (for [e es]
+                   (let [root (get by-api (:api e))
+                         node (find-node root (:node-type e) (:node-id e))]
+                     (cond
+                       (nil? node)
+                       [:missing (:id e) (str (:node-type e) " " (:node-id e)
+                                              " not found in " (:api e))]
+                       (not= (:label e) (.-label_description node))
+                       [:drift (:id e) (str "recorded " (pr-str (:label e))
+                                            " but API says "
+                                            (pr-str (.-label_description node)))]
+                       :else [:ok (:id e) (.-label_description node)])))
+                 bad (remove #(= :ok (first %)) results)]
+             (doseq [[status id detail] results]
+               (println (if (= :ok status) "  OK  " "  FAIL") id "—" detail))
+             (println "VERIFIED\t" (count (filter #(= :ok (first %)) results))
+                      "/" (count results))
+             (if (seq bad)
+               (die 1 "FAIL:" (count bad) "citation(s) do not match the official eCFR API")
+               (println "PASS: every citation matches the official eCFR API"))))))))
+
+(-main)

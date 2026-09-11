@@ -1,4 +1,4 @@
-#!/usr/bin/env nbb
+#!/usr/bin/env kbb
 ;; Live citation gate for src/statute/facts.cljk.
 ;;
 ;; Re-fetches the official eCFR versioner API and asserts that every
@@ -6,7 +6,7 @@
 ;; label_description the API returns for that node. Any drift, any missing
 ;; node, any unreachable API => exit 1.
 ;;
-;;   nbb tools/verify_citations.cljk
+;;   kbb --backend sci tools/verify_citations.cljk
 ;;
 ;; Why this exists, and why it does NOT curl :statute/url --
 ;; www.ecfr.gov answers automated clients with HTTP 200 and a

@@ -29,8 +29,8 @@ official eCFR and confirmed against the eCFR versioner API on 2026-08-19:
 Government-wide U.S. statutes are **not** duplicated here — they belong to the
 country coordinator `cloud-itonami-iso3166-usa`. The two catalogs compose.
 
-    clojure -M:test                  # offline: shape + provenance rules
-    nbb tools/verify_citations.cljk  # live: re-checks every label against eCFR
+    kbb -M:test                  # offline: shape + provenance rules
+    kbb --backend sci tools/verify_citations.cljk  # live: re-checks every label against eCFR
 
 The live gate exits `0` verified / `1` drifted / `2` could-not-answer. Note it
 deliberately does **not** `curl` the citation URLs: www.ecfr.gov answers

@@ -2,7 +2,7 @@
   "Offline conformance gate for the DOE citation catalog. Runs with no
   network: it pins the shape and provenance rules that make the catalog
   trustworthy. The complementary *live* check -- re-fetching the eCFR API
-  and diffing every `:statute/verified-label` -- is `tools/verify_citations.cljs`,
+  and diffing every `:statute/verified-label` -- is `tools/verify_citations.cljk`,
   which is what actually proves the citations are not fabricated."
   (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is testing]]

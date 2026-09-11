@@ -1,12 +1,12 @@
 #!/usr/bin/env nbb
-;; Live citation gate for src/statute/facts.cljc.
+;; Live citation gate for src/statute/facts.cljk.
 ;;
 ;; Re-fetches the official eCFR versioner API and asserts that every
 ;; :statute/verified-label in the catalog is still the byte-exact
 ;; label_description the API returns for that node. Any drift, any missing
 ;; node, any unreachable API => exit 1.
 ;;
-;;   nbb tools/verify_citations.cljs
+;;   nbb tools/verify_citations.cljk
 ;;
 ;; Why this exists, and why it does NOT curl :statute/url --
 ;; www.ecfr.gov answers automated clients with HTTP 200 and a
@@ -20,7 +20,7 @@
 (ns verify-citations
   (:require [kotoba.lang.text :as str]))
 
-(def catalog-file "src/statute/facts.cljc")
+(def catalog-file "src/statute/facts.cljk")
 
 (defn- die [code & msg]
   (println (str/join " " msg))

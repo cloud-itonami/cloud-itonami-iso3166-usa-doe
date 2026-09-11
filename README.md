@@ -19,7 +19,7 @@ navigating **Department of Energy**-specific public-procurement / regulatory com
 
 ## Spec-basis (what the compliance claim rests on)
 
-`src/statute/facts.cljc` — 11 DOE agency-level regulations, each cited to the
+`src/statute/facts.cljk` — 11 DOE agency-level regulations, each cited to the
 official eCFR and confirmed against the eCFR versioner API on 2026-08-19:
 
 - **DEAR** (48 CFR ch. 9): parts 904, 909, 923, 952, 970
@@ -30,7 +30,7 @@ Government-wide U.S. statutes are **not** duplicated here — they belong to the
 country coordinator `cloud-itonami-iso3166-usa`. The two catalogs compose.
 
     clojure -M:test                  # offline: shape + provenance rules
-    nbb tools/verify_citations.cljs  # live: re-checks every label against eCFR
+    nbb tools/verify_citations.cljk  # live: re-checks every label against eCFR
 
 The live gate exits `0` verified / `1` drifted / `2` could-not-answer. Note it
 deliberately does **not** `curl` the citation URLs: www.ecfr.gov answers
